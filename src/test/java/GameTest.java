@@ -16,6 +16,12 @@ class GameTest {
 	}
 
 	@Test
+	void givenPlayersNames_WhenGetName_ThenReturnPlayersNames() {
+        game = new Game("Rafael Nadal", "Roger Federer");
+		Assertions.assertEquals("Rafael Nadal vs Roger Federer", game.getName());
+	}
+
+	@Test
 	void givenPlayer1ScoresThenScore() {
 		game.player1Scores();
 		Assertions.assertEquals("15,Love", game.getScore());
@@ -87,5 +93,33 @@ class GameTest {
 		game.player1Scores();
 		Assertions.assertEquals("Game Player 2", game.getScore());
 	}
+
+    @Test
+    void givenGameScore_whenDisplayScore_thenDisplayFancyScore() {
+        game = Game.createWithScore("Rafael Nadal", "Roger Federer", 1, 4);
+        Assertions.assertEquals("┌───────────────┐┌────┐\n" + "│               ││┌──┐│\n" + "│ Rafael Nadal  │││15││\n"
+                                + "│               ││└──┘│\n" + "│               ││┌──┐│\n"
+                                + "│ Roger Federer │││40││\n" + "│               ││└──┘│\n"
+                                + "└───────────────┘└────┘\n", game.getDisplayScore());
+    }
+
+    @Test
+    void givenGameNotStarted_WhenGetStatus_ThenNotStarted() {
+        game = new Game();
+        Assertions.assertEquals(Game.Status.NOT_STARTED, game.getStatus());
+
+    }
+
+    @Test
+    void givenGameStarted_WhenGetStatus_ThenStarted() {
+        game = Game.createWithScore(3, 1);
+        Assertions.assertEquals(Game.Status.STARTED, game.getStatus());
+    }
+
+    @Test
+    void givenGameFinished_WhenGetStatus_ThenFinished() {
+        game = Game.createWithScore(4, 1);
+        Assertions.assertEquals(Game.Status.FINISHED, game.getStatus());
+    }
 
 }
