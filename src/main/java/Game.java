@@ -2,18 +2,16 @@ import com.acidmanic.consoletools.drawing.AsciiBorders;
 import com.acidmanic.consoletools.table.Table;
 import com.acidmanic.consoletools.table.builders.TableBuilder;
 
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
+import java.util.concurrent.Flow;
 
-public class Game {
+public class Game implements Flow.Subscriber<Player> {
 
 	private Player player1;
 	private Player player2;
 	private int player1Score;
 	private int player2Score;
-    private final Random random = new Random();
     private Status status = Status.NOT_STARTED;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -139,22 +137,10 @@ public class Game {
 
     public void start() {
         status = Status.STARTED;
-        executor.submit(playGame(Game::player1Scores));
-        executor.submit(playGame(Game::player2Scores));
-    }
-
-    private Runnable playGame(Consumer<Game> gameConsumer) {
-        return () -> {
-            while (this.isActive()) {
-                try {
-                    Thread.sleep(random.nextInt(1000));
-                    gameConsumer.accept(this);
-                    System.out.println(this.getScore());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
+        player1.subscribe(this);
+        player2.subscribe(this);
+        executor.submit(player1);
+        executor.submit(player2);
     }
 
     public Status getStatus() {
@@ -162,6 +148,30 @@ public class Game {
             status = Status.FINISHED;
         }
         return status;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+
+    }
+
+    @Override
+    public void onNext(Player player) {
+        if (player1.equals(player)) {
+            player1Score++;
+        } else {
+            player2Score++;
+        }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+
+    }
+
+    @Override
+    public void onComplete() {
+
     }
 
     public enum Status {
