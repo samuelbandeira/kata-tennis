@@ -21,12 +21,10 @@ public class Player implements Flow.Publisher<Player>, Runnable {
 
     @Override
     public void run() {
-        if (subscription != null) {
-            final Game subscriber = subscription.getSubscriber();
-            while (subscriber.isActive()) {
-                subscription.request(1);
-                System.out.println(subscriber.getScore());
-            }
-        }
+        startPlay();
+    }
+
+    public void startPlay() {
+        subscription.request(1);
     }
 }
